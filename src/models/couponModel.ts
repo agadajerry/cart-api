@@ -1,5 +1,5 @@
 import sequelizeConnect from "../dbConnection/connect";
-import Sequelize from "sequelize";
+import Sequelize,{DataTypes} from "sequelize";
 
 const couponTable = sequelizeConnect.define("coupon", {
   coupon_id: {
@@ -11,22 +11,16 @@ const couponTable = sequelizeConnect.define("coupon", {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  coupon_discount: {
-    type: Sequelize.INTEGER,
-    allowNull: false,
-  },
   coupon_expiry_date: {
     type: Sequelize.DATE,
     allowNull: false,
   },
-  couponMax: {
-    type: Sequelize.INTEGER,
-    allowNull: false,
-  },
-  couponUsage: {
-    type: Sequelize.INTEGER,
-    allowNull: false,
-  },
+
+couponType:{
+    type:DataTypes.ENUM,
+       values:  ['FIXED10', 'PERCENT10', 'MIXED10','REJECTED10'],
+       defaultValue:'FIXED10'
+}
 });
 
 export default couponTable;

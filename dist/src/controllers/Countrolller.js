@@ -15,20 +15,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Countrollers = void 0;
 const couponModel_1 = __importDefault(require("../models/couponModel"));
 const cartModel_1 = __importDefault(require("../models/cartModel"));
-// couponTable.sync();
-cartModel_1.default.sync();
+const sequelize_1 = require("sequelize");
+couponModel_1.default.sync();
+// cartModel.sync();
 class Countrollers {
     createCoupon(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { coupon_code, coupon_discount, coupon_expiry_date, couponMax, couponUsage } = req.body;
+            const { coupon_code, coupon_expiry_date, couponType } = req.body;
             const result = yield couponModel_1.default.create({
                 coupon_code,
-                coupon_discount,
                 coupon_expiry_date,
-                couponMax,
-                couponUsage,
+                couponType
             });
-            return res.send(result);
+            return res.send({
+                msg: "coupon created",
+                result,
+            });
         });
     }
     // create cart
@@ -38,7 +40,7 @@ class Countrollers {
             const result = yield cartModel_1.default.create({
                 cartProductPrice,
                 cartProductName,
-                cartProductQuantity
+                cartProductQuantity,
             });
             return res.send(result);
         });
@@ -46,9 +48,37 @@ class Countrollers {
     getCart(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const result = yield cartModel_1.default.findAll();
-            return res.send(result);
+            return res.send({ msg: "List of products in cart", result });
+        });
+    }
+    findOneCouponCode(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { coupon_code } = req.body;
+            if (coupon_code.length < 4) {
+                return;
+            }
+            else {
+                const coupon = yield couponModel_1.default.findOne({
+                    where: {
+                        coupon_code: coupon_code,
+                        coupon_expiry_date: { [sequelize_1.Op.gte]: new Date() },
+                    },
+                    attributes: ["coupon_code", "coupon_discount"],
+                });
+                if (coupon) {
+                    return res.send({ msg: "coupon code ", coupon });
+                }
+                else {
+                    return res.send({ error: "No coupon code found or expired" });
+                }
+            }
         });
     }
 }
 exports.Countrollers = Countrollers;
+// find coupon code and it validity
+// apply coupon code
+function applyCouponCode(coupon) {
+    return coupon;
+}
 exports.default = new Countrollers();

@@ -4,8 +4,9 @@ import Controller from '../controllers/Countrolller';
 
 
 
-router.post('/coupon', Controller.createCoupon);
+router.post('/create-coupon', Controller.createCoupon);
 router.post('/cart', Controller.createCart);
+router.get('/coupon', Controller.findOneCouponCode);
 router.get('/cart-items', Controller.getCart);
 
 export default router;
